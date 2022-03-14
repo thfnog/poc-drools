@@ -1,0 +1,5 @@
+com/spring/drools/api/interfaces/ScoreController.class
+com/spring/drools/api/SpringDroolsApplication.class
+com/spring/drools/api/interfaces/json/Score$ScoreBuilder.class
+com/spring/drools/api/interfaces/json/Score.class
+com/spring/drools/api/config/DroolConfig.class

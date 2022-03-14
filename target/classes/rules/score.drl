@@ -1,0 +1,19 @@
+package KieRule;
+
+import com.spring.drools.api.interfaces.json.Score;
+
+no-loop
+
+rule "Score under 80%"
+    when
+        score: Score(value >= 80.0)
+    then
+        modify(score) { setApproved(true) };
+end
+
+rule "Score below 80%"
+    when
+        score: Score(value < 80.0)
+    then
+        modify(score) { setApproved(false) };
+end
