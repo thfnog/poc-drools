@@ -1,10 +1,10 @@
 server:
   port: ${SERVER_PORT:9090}
   servlet:
-    context-path: /orchestrator/v1
+    context-path: /poc-spring-drools/v1
 logging:
   level:
-    root: ${ROOT_LOG_LEVEL:info}
+    root: ${ROOT_LOG_LEVEL:debug}
 
   pattern:
     console: "[%thread][%highlight(%-5level)][%cyan(%d{yyyy-MM-dd HH:mm:ss})][%yellow(%X{requestId})][%magenta(%logger{40})] - %msg%n"
@@ -19,10 +19,11 @@ spring:
   profiles:
     active: ${SPRING_ACTIVE_PROFILE:local}
 
-#Gateway
 rest:
   api:
       drools-server:
         uri: ${REST_API_URI_DROOLS_SERVER:http://localhost:8180/kie-server/services/rest/server}
         username: admin
         password: admin
+        containers:
+          admin: ${DROOLS_CONTAINER_ID:admin}

@@ -1,0 +1,29 @@
+version: '2'
+services:
+  drools-workbench:
+    container_name: drools-workbench
+    image: jboss/drools-workbench-showcase:latest
+    ports:
+      - "8080:8080"
+      - "8001:8001"
+    healthcheck:
+      test: "exit 0"
+    networks:
+      - drools-net
+
+  kie-server:
+    container_name: kie-server
+    image: quay.io/kiegroup/kie-server-showcase:latest
+    ports:
+      - "8180:8080"
+    links:
+      - "drools-workbench"
+      - "drools-workbench:kie-wb"
+    depends_on:
+      drools-workbench:
+        condition: service_healthy
+    networks:
+      - drools-net
+
+networks:
+  drools-net:

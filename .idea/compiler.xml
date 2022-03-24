@@ -11,7 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="spring-drools" target="1.8" />
+      <module name="spring-drools" target="10" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

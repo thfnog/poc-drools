@@ -1,16 +1,10 @@
 package com.spring.drools.api.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spring.drools.api.interfaces.json.Partner;
 import com.spring.drools.api.interfaces.json.Score;
-import com.spring.drools.api.interfaces.json.ScoreResponse;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.drools.core.command.runtime.BatchExecutionCommandImpl;
-import org.drools.core.command.runtime.rule.FireAllRulesCommand;
-import org.drools.core.command.runtime.rule.GetObjectsCommand;
-import org.drools.core.command.runtime.rule.InsertObjectCommand;
 import org.kie.api.KieServices;
 import org.kie.api.command.BatchExecutionCommand;
 import org.kie.api.command.Command;
@@ -25,8 +19,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DroolsClient {
 
-  private static final String CONTAINER_ID = "MVP_Orquestrador_1.0.0-SNAPSHOT"; // TODO: será por parceiro
-  private static final String SCORE_IDENTIFIER = "Score";
+  private static final String SCORE_IDENTIFIER = "score";
+  private static final String PARTNER_IDENTIFIER = "partner";
 
   @Value("${rest.api.drools-server.uri}")
   private String uri;
@@ -37,21 +31,36 @@ public class DroolsClient {
   @Value("${rest.api.drools-server.password}")
   private String password;
 
+  @Value("${rest.api.drools-server.containers.admin}")
+  private String adminContainerId;
+
   private final KieServices kieServices;
   private final RuleServicesClient rulesClient;
 
-  @SneakyThrows
-  public Score validateScore(Score score) {
-    BatchExecutionCommand command = buildCommands(score, SCORE_IDENTIFIER);
-    ServiceResponse<ExecutionResults> response = rulesClient.executeCommandsWithResults(CONTAINER_ID, command);
+  public Partner getPartner(Integer partnerId) {
+    Partner partner = Partner.builder().id(partnerId).build();
+    return (Partner) getResultValue(partner, adminContainerId, PARTNER_IDENTIFIER);
+  }
+
+  public Score validateScore(Double totalScore, String containerId) {
+    Score score = Score.builder().value(totalScore).build();
+    return (Score) getResultValue(score, containerId, SCORE_IDENTIFIER);
+  }
+
+  private <T>Object getResultValue(T object, String containerId, String identifier) {
+    BatchExecutionCommand command = buildCommands(object, identifier);
+    ServiceResponse<ExecutionResults> response = rulesClient.executeCommandsWithResults(containerId, command);
 
     ExecutionResults results = response.getResult();
-    return (Score) results.getValue(SCORE_IDENTIFIER);
+    return results.getValue(identifier);
   }
 
   private <T>BatchExecutionCommand buildCommands(T object, String identifier) {
     KieCommands commandFactory = kieServices.getCommands();
 
+    /*
+      ! É possível rodar o camando para um group de rules específico utilizando o newAgendaGroupSetFocus("nome do group")
+     */
     List<Command<?>> commands = new ArrayList<>();
     commands.add(commandFactory.newInsert(object, identifier));
     commands.add(commandFactory.newFireAllRules());

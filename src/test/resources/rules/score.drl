@@ -1,0 +1,53 @@
+package com.spring.drools.api;
+
+import com.spring.drools.api.interfaces.json.Score;
+global com.spring.drools.api.interfaces.json.response.ScoreResponse scoreResponse;
+
+dialect "mvel"
+
+rule "Score Equals 91 - Without Group"
+  when
+    score: Score(value == 91.0)
+  then
+    scoreResponse.setApproved(true);
+    scoreResponse.setValue(score.getValue());
+    scoreResponse.setMessage("Score Equals 91 - Without Group");
+end
+
+rule "Score under 80% - Group A"
+  agenda-group "a"
+  when
+    score: Score(value >= 80.0)
+  then
+    scoreResponse.setApproved(true);
+    scoreResponse.setValue(score.getValue());
+    scoreResponse.setMessage("Score under 80% - Group A");
+end
+
+rule "Score Equals 79% - Group B"
+  agenda-group "b"
+  when
+    score: Score(value == 79.0 && type == "X")
+  then
+    scoreResponse.setApproved(true);
+    scoreResponse.setValue(score.getValue());
+    scoreResponse.setMessage("Score Equals 79.0% - Group B");
+end
+
+rule "Score below 80% - Group C"
+  agenda-group "c"
+  when
+    score: Score(value < 80.0)
+  then
+    scoreResponse.setApproved(false);
+    scoreResponse.setValue(score.getValue());
+    scoreResponse.setMessage("Score below 80.0% - Group C");
+end
+
+rule "Score Equals 92 - Without Group"
+  when
+    score: Score(value == 92.0)
+  then
+    scoreResponse.setApproved(true);
+    scoreResponse.setValue(score.getValue());
+end

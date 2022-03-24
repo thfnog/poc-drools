@@ -1,0 +1,26 @@
+package com.spring.drools
+
+import com.spring.drools.api.interfaces.json.Partner;
+import com.spring.drools.api.interfaces.json.Integration;
+
+no-loop
+
+rule "Se parceiro for a Digio"
+    when
+        partner: Partner(id == 562)
+    then
+        java.util.List<Integration> integrations = new java.util.ArrayList<>();
+        Integration integration = new Integration();
+        integration.setService("EMAIL_AGE");
+        integrations.add(integration);
+
+        integration = new Integration();
+        integration.setService("CLEAR_SALE");
+        integrations.add(integration);
+
+        modify(partner) {
+            setIntegrations(integrations),
+            setName("Digio"),
+            setContainerId("drools.api_0.0.1-SNAPSHOT");
+        };
+end
